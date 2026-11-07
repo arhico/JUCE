@@ -71,7 +71,19 @@ public:
 
         auto* display = getDisplay();
 
-        if (allowedTypes.contains (targetType))
+        if (targetType == getAtoms().targets)
+        {
+            Array<Atom> targets { targetType };
+            targets.addArray (allowedTypes);
+
+            s.xselection.property = evt.xselectionrequest.property;
+
+            X11Symbols::getInstance()->xChangeProperty (display, evt.xselectionrequest.requestor, evt.xselectionrequest.property,
+                                                        XA_ATOM, 32, PropModeReplace,
+                                                        reinterpret_cast<const unsigned char*> (targets.getRawDataPointer()),
+                                                        targets.size());
+        }
+        else if (allowedTypes.contains (targetType))
         {
             s.xselection.property = evt.xselectionrequest.property;
 
