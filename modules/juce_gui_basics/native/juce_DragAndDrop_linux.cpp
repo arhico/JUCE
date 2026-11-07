@@ -284,6 +284,11 @@ public:
             }
         }
 
+        // Prefer files, as on other platforms: GTK 4 offers them as text before text/uri-list
+        for (auto type : atoms.allowedMimeTypes)
+            if (srcMimeTypeAtomList.contains (type) && XWindowSystemUtilities::Atoms::isMimeTypeFile (getDisplay(), type))
+                dragAndDropCurrentMimeType = type;
+
         for (int i = 0; i < srcMimeTypeAtomList.size() && dragAndDropCurrentMimeType == 0; ++i)
             for (int j = 0; j < numElementsInArray (atoms.allowedMimeTypes); ++j)
                 if (srcMimeTypeAtomList[i] == atoms.allowedMimeTypes[j])
