@@ -183,6 +183,7 @@ public:
             }
         }
 
+        acceptedDropAction = targetAction;
         sendDragAndDropStatus (true, targetAction);
 
         if (dragInfo.position != dropPos)
@@ -491,12 +492,14 @@ private:
         sendExternalDragAndDropMessage (msg);
     }
 
-    void sendDragAndDropFinish()
+    void sendDragAndDropFinish (bool accepted)
     {
         XClientMessageEvent msg;
         zerostruct (msg);
 
         msg.message_type = getAtoms().XdndFinished;
+        msg.data.l[1]    = accepted ? 1 : 0;
+        msg.data.l[2]    = accepted ? (long) acceptedDropAction : (long) None;
         sendDragAndDropMessage (msg);
     }
 
@@ -543,7 +546,7 @@ private:
                                                    AnyPropertyType);
 
         if (prop.success && prop.data != nullptr && prop.actualFormat == 32 && prop.numItems == 1)
-            return jmin ((int) prop.data[0], (int) XWindowSystemUtilities::Atoms::DndVersion);
+            return jmin ((int) prop.data[0], sourceDndVersion);
 
         return -1;
     }
@@ -569,7 +572,7 @@ private:
     {
         ComponentPeer::DragInfo dragInfoCopy (dragInfo);
 
-        sendDragAndDropFinish();
+        sendDragAndDropFinish (! dragInfoCopy.isEmpty());
         resetDragAndDrop();
 
         if (! dragInfoCopy.isEmpty())
@@ -582,18 +585,22 @@ private:
         dragInfo.clear();
         dragInfo.position = Point<int> (-1, -1);
         dragAndDropCurrentMimeType = 0;
+        acceptedDropAction = None;
         dragAndDropSourceWindow = 0;
         srcMimeTypeAtomList.clear();
         finishAfterDropDataReceived = false;
     }
 
     //==============================================================================
+    // Sending with version 4 or later means honouring XdndProxy, which isn't supported
+    static constexpr int sourceDndVersion = 3;
+
     ::Window windowH = 0, targetWindow = 0, dragAndDropSourceWindow = 0;
 
     int xdndVersion = -1;
     bool isText = false, dragging = false, expectingStatus = false, canDrop = false, finishAfterDropDataReceived = false;
 
-    Atom dragAndDropCurrentMimeType;
+    Atom dragAndDropCurrentMimeType, acceptedDropAction = None;
     Array<Atom> allowedTypes, srcMimeTypeAtomList;
 
     ComponentPeer::DragInfo dragInfo;
