@@ -362,7 +362,7 @@ public:
 
         auto* display = getDisplay();
 
-        allowedTypes.add (XWindowSystemUtilities::Atoms::getCreating (display, isText ? "text/plain" : "text/uri-list"));
+        allowedTypes = { XWindowSystemUtilities::Atoms::getCreating (display, isText ? "text/plain" : "text/uri-list") };
 
         XWindowSystemUtilities::ScopedXLock xLock;
 
