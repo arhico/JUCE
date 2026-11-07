@@ -3034,7 +3034,7 @@ bool XWindowSystem::externalDragFileInit (LinuxComponentPeer* peer, const String
         if (f.matchesWildcard ("?*://*", false))
             uriList.add (f);
         else
-            uriList.add ("file://" + f);
+            uriList.add (URL (File (f)).toString (false));
     }
 
     return dragState.externalDragInit ((::Window) peer->getNativeHandle(), false, uriList.joinIntoString ("\r\n"), std::move (callback));
