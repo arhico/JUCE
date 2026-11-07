@@ -92,7 +92,7 @@ namespace XWindowSystemUtilities
         static String getName (::Display*, Atom);
         static bool isMimeTypeFile (::Display*, Atom);
 
-        static constexpr unsigned long DndVersion = 3;
+        static constexpr unsigned long DndVersion = 5;
 
         Atom protocols, protocolList[3], changeState, state, userTime, activeWin, pid, windowType, windowState,
              windowStateHidden, windowStateMaximisedHorz, windowStateMaximisedVert,
